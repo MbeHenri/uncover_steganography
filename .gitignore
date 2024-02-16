@@ -5,3 +5,5 @@ test*
 sl*.json
 *env
 __pycache__
+params*
+conf.json

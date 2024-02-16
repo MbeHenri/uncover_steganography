@@ -1,9 +1,17 @@
 import numpy as np
 from PIL import Image
 import os
-from src.utils.functions import concat_list_features, cutting, extraction_features_histogram, hashing_mean, patching, preprocessing
+from src.utils.functions import (
+    concat_list_features,
+    cutting,
+    extraction_features_histogram,
+    hashing_mean,
+    patching,
+    preprocessing,
+)
 
 from src.utils.loadandsave import load2json, load_model, save2json
+
 
 def distance(x, y):
     x = np.array(x)
@@ -26,19 +34,20 @@ def search(f, datas: list):
                 db = datas[i]
                 dmin = d
     return db
-    
 
-def hinding(
+
+def hide(
     path_secret_image,
-    path_sl="sl.json",
     path_slid="slid.json",
     path_imgs="./send_imgs",
     path_indexdb="./indexdb",
-    key=None,
+    path_conf="conf.json",
+    Iw: int = 640,
+    Ih: int = 480,
 ):
     params = load2json(os.path.join(path_indexdb, "params.json"))
 
-    image_secret = preprocessing(path_secret_image, Iw=params["Iw"], Ih=params["Ih"])
+    image_secret = preprocessing(path_secret_image, Iw=Iw, Ih=Ih)
 
     patchs, _ = patching(image_secret, Pw=params["Pw"], Ph=params["Ph"])
 
@@ -46,7 +55,7 @@ def hinding(
     indexfiles = load_model(os.path.join(path_indexdb, "indexfiles.pkl"))
 
     dir_imgs = os.path.join(path_indexdb, "imgs")
-    
+
     SLid = []
     for i in range(PB):
         blocs, _ = cutting(patchs[i], n=params["n"], m=params["m"])
@@ -69,3 +78,4 @@ def hinding(
         )
 
     save2json(SLid, path_slid)
+    save2json({"Iw": Iw, "Ih": Ih}, path_conf)

@@ -7,7 +7,8 @@ Ce dépôt vise à mettre en place un ensemble d'outils pour le cas, en impléme
 
 Nous utilisons les méthodes suivantes :
 
-- CIS_PDIR : `Coverless image steganography using partial-duplicate image retrieval`
+- `CIS_PDIR` : Coverless image steganography using partial-duplicate image retrieval
+- `HCCIH` : Towards a high capacity coverless information hiding approach
 
 ## Ressources et Dépendances
 

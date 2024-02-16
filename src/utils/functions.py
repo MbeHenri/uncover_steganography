@@ -1,11 +1,14 @@
 from PIL import Image
 import os
+import numpy as np
 
 
-def preprocessing(path_image, Iw=640, Ih=480):
+def preprocessing(path_image, Iw=640, Ih=480, need_resize=True):
     image = Image.open(path_image)
-    return image.resize((Iw, Ih)).convert("L")
-    
+    if need_resize:
+        image = image.resize((Iw, Ih))
+    return image.convert("L")
+
 
 def patching(image, Pw=64, Ph=48):
     Iw, Ih = image.size
@@ -13,16 +16,21 @@ def patching(image, Pw=64, Ph=48):
     blocs = []
     positions = []
     # Découper l'image en blocs de taille spécifiée
-    for y in range(0, Ih, Ph):
-        for x in range(0, Iw, Pw):
+    y = 0
+    while (y + Ph) <= Ih:
+        x = 0
+        while (x + Pw) <= Iw:
             box = (x, y, x + Pw, y + Ph)
             positions.append({"x": x, "y": y})
             blocs.append(
                 image.crop(box),
             )
+            x += Pw
+        y += Ph
 
     return blocs, positions
-    
+
+
 def cutting(image, n=4, m=4):
     Pw, Ph = image.size
     Bw = Pw // n
@@ -42,7 +50,8 @@ def cutting(image, n=4, m=4):
             )
 
     return blocs, positions
-    
+
+
 def mean_pixels(image):
     largeur, hauteur = image.size
     pixels = image.load()
@@ -65,17 +74,20 @@ def mean_pixels(image):
     # Calculer la moyenne des pixels
     moyenne_pixels = total / nb_pixels
     return moyenne_pixels
-    
+
+
 def extraction_features_histogram(blocs):
     # on peut voir un bloc du patch d'image comme une vue de l'image
     B = len(blocs)
     return [blocs[i].histogram() for i in range(B)]
-    
+
+
 def concat_list_features(list_features):
     result = []
     for vecteur in list_features:
         result.extend(vecteur)
     return result
+
 
 def regroup_datas(datas: list, labels: list):
     result = {}
@@ -89,9 +101,11 @@ def regroup_datas(datas: list, labels: list):
 
     return result
 
+
 def createdir(path_dir):
     if not os.path.exists(path_dir):
         os.makedirs(path_dir)
+
 
 def hashing_mean(blocs):
     B = len(blocs)
@@ -100,3 +114,26 @@ def hashing_mean(blocs):
     for i in range(B - 1):
         hashcode.append("1" if V[i] >= V[i + 1] else "0")
     return "".join(hashcode)
+
+
+def eign_max(image):
+    eigenvalues, _ = np.linalg.eig(np.array(image))
+    return np.max(eigenvalues)
+
+
+def hashing_eign(blocs: list, type_hash="type2"):
+    B = len(blocs)
+    if B == 9:
+        V = [eign_max(blocs[i]) for i in range(B)]
+        hashcode = []
+        if type_hash == "type4":
+            for i in range(9):
+                if i != 4:
+                    hashcode.append("1" if V[4] >= V[i + 1] else "0")
+        else:
+            for i in range(8):
+                hashcode.append("1" if V[i] >= V[i + 1] else "0")
+
+        return "".join(hashcode)
+
+    return None

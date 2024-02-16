@@ -37,6 +37,7 @@ def get_images(
                     chemin_fichier,
                     Ih=Ih,
                     Iw=Iw,
+                    need_resize=False,
                 )
             )
     return images
@@ -57,12 +58,12 @@ def construct_indexfiles(
 ):
     # sauvegarde des paramètres de prétraitement et de découpage dans le dossier de sortie
     save2json(
-        {"Iw": Iw, "Ih": Ih, "Pw": Pw, "Ph": Ph, "n": n, "m": m},
+        {"Pw": Pw, "Ph": Ph, "n": n, "m": m},
         os.path.join(output_path_db, "params.json"),
     )
 
     # on recupere les images avec prétraitement
-    images = get_images(input_path_images, Ih=Ih, Iw=Iw)
+    images = get_images(input_path_images)
 
     # patching des images en conservation les positions
     C = []
