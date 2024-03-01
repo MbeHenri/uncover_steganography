@@ -7,3 +7,4 @@ sl*.json
 __pycache__
 params*
 conf.json
+p*k.json

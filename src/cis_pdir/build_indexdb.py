@@ -29,17 +29,21 @@ def get_images(
         chemin_fichier = os.path.join(chemin_dossier, nom_fichier)
 
         # Vérifier si le fichier est une image en vérifiant son extension
-        if os.path.isfile(chemin_fichier) and any(
-            chemin_fichier.lower().endswith(ext) for ext in extensions_images
-        ):
-            images.append(
-                preprocessing(
-                    chemin_fichier,
-                    Ih=Ih,
-                    Iw=Iw,
-                    need_resize=False,
+        
+        try:
+            if os.path.isfile(chemin_fichier) and any(
+                chemin_fichier.lower().endswith(ext) for ext in extensions_images
+            ):
+                images.append(
+                    preprocessing(
+                        chemin_fichier,
+                        Ih=Ih,
+                        Iw=Iw,
+                        need_resize=False,
+                    )
                 )
-            )
+        except Exception:
+            pass
     return images
 
 

@@ -1,12 +1,13 @@
 from src.utils.functions import cutting, hashing_eign, patching, preprocessing
-from src.utils.loadandsave import save2json
+from src.utils.loadandsave import save2json, load2json
+from src.utils.pallier import encrypt
 
 
 class LookupTable:
     def __init__(self, hashcodes: list, positions: list) -> None:
         self.table = []
         self.n = len(hashcodes)
-        self.hash_bound = {}
+        # self.hash_bound = {}
         for i in range(self.n):
             self.table.append(
                 {
@@ -15,32 +16,21 @@ class LookupTable:
                     "mask": 0,
                 }
             )
-            self.hash_bound[hashcodes[i]] = 1
+            # self.hash_bound[hashcodes[i]] = 1
 
     def match(self, car: int):
         pos = None
-        ok = True
         try:
-            while ok:
-                founded = False
-                for i in range(self.n):
-                    founded = self.table[i]["hashcode"] == car or founded
-                    if (
-                        self.table[i]["hashcode"] == car
-                        and self.table[i]["mask"] < self.hash_bound[car]
-                    ):
-                        pos = self.table[i]["position"]
-                        self.table[i]["mask"] += 1
-
-                if pos is not None:
-                    ok = False
-                else:
-                    if founded:
-                        self.hash_bound[car] += 1
-                    else:
-                        ok = False
+            i = 0
+            ok = False
+            while not ok and i < self.n:
+                if self.table[i]["hashcode"] == car and self.table[i]["mask"] != 1:
+                    pos = self.table[i]["position"]
+                    self.table[i]["mask"] = 1
+                    ok = True
+                i += 1
         except KeyError:
-            return None
+            pass
         return pos
 
 
@@ -53,6 +43,7 @@ def hide(
     type_hash="type2",
     path_sl="sl.json",
     path_conf="conf.json",
+    path_public_key="./pubk.json",
 ):
     cover_image = preprocessing(path_cover_image, Iw=W, Ih=H)
 
@@ -70,9 +61,32 @@ def hide(
 
     SL = []
     n = len(msg_ascii)
+    ideal = True
     for i in range(n):
         position = lookupTable.match(msg_ascii[i])
-        SL.append(position)
+        if position:
+            SL.append(
+                {
+                    "s": i,
+                    "x": position["x"],
+                    "y": position["y"],
+                }
+            )
+        else:
+            ideal = False
 
-    save2json(SL, path_sl)
+    # cyptage et sauvegarde des informations de localisation
+    public_key = load2json(path_public_key)
+    SL = [
+        {
+            "s": encrypt(public_key, position["s"]),
+            "x": encrypt(public_key, position["x"]),
+            "y": encrypt(public_key, position["y"]),
+        }
+        for position in SL
+    ]
+    SaveSL = {"n": encrypt(public_key, n), "SL": SL}
+    save2json(SaveSL, path_sl)
     save2json({"L": L, "W": W, "H": H, "type_hash": type_hash}, path_conf)
+
+    return ideal
