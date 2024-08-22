@@ -8,3 +8,6 @@ __pycache__
 params*
 conf.json
 p*k.json
+lookuptable
+offset.json
+perf*.old

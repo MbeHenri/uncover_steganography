@@ -1,6 +1,7 @@
 from src.utils.functions import cutting, hashing_eign, patching, preprocessing
 from src.utils.loadandsave import save2json, load2json
 from src.utils.pallier import encrypt
+from src.utils.substitution import generate_substitution_key
 
 
 class LookupTable:
@@ -44,6 +45,7 @@ def hide(
     path_sl="sl.json",
     path_conf="conf.json",
     path_public_key="./pubk.json",
+    path_sub_key="./psk.json",
 ):
     cover_image = preprocessing(path_cover_image, Iw=W, Ih=H)
 
@@ -55,10 +57,14 @@ def hide(
         blocs, _ = cutting(patchs[i], n=3, m=3)
         hashcode = int(hashing_eign(blocs, type_hash=type_hash), 2)
         hashcodes.append(hashcode)
-    # print(set(hashcodes))
-    lookupTable = LookupTable(hashcodes, positions)
-    msg_ascii = [ord(caractere) for caractere in secret_message]
 
+    lookupTable = LookupTable(hashcodes, positions)
+
+    # masquage du message
+    key = generate_substitution_key()
+    save2json(key, path_sub_key)
+    
+    msg_ascii = [key[ord(caractere)] for caractere in secret_message]
     SL = []
     n = len(msg_ascii)
     ideal = True
@@ -89,5 +95,4 @@ def hide(
     save2json(SaveSL, path_sl)
     save2json({"L": L, "W": W, "H": H, "type_hash": type_hash}, path_conf)
     
-    # print(lookupTable.table)
     return ideal

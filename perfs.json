@@ -1,0 +1,90 @@
+{
+  "BER": [
+    { "method": "hccih", "attack": "median_3x3", "val": 0.05387931034482758 },
+    { "method": "chccih", "attack": "median_3x3", "val": 0.0 },
+    { "method": "hccih", "attack": "median_5x5", "val": 0.07112068965517242 },
+    { "method": "chccih", "attack": "median_5x5", "val": 0.0 },
+    {
+      "method": "hccih",
+      "attack": "gaussian_noise_0.001",
+      "val": 0.0668103448275862
+    },
+    {
+      "method": "chccih",
+      "attack": "gaussian_noise_0.001",
+      "val": 0.00646551724137931
+    },
+    { "method": "hccih", "attack": "gaussian_noise_0.005", "val": 0.0625 },
+    {
+      "method": "chccih",
+      "attack": "gaussian_noise_0.005",
+      "val": 0.015086206896551725
+    },
+    {
+      "method": "hccih",
+      "attack": "salt_and_pepper_1%",
+      "val": 0.1336206896551724
+    },
+    {
+      "method": "chccih",
+      "attack": "salt_and_pepper_1%",
+      "val": 0.06465517241379311
+    },
+    {
+      "method": "hccih",
+      "attack": "salt_and_pepper_5%",
+      "val": 0.23706896551724138
+    },
+    {
+      "method": "chccih",
+      "attack": "salt_and_pepper_5%",
+      "val": 0.20474137931034483
+    },
+    { "method": "hccih", "attack": "speckle_0.01", "val": 0.2543103448275862 },
+    {
+      "method": "chccih",
+      "attack": "speckle_0.01",
+      "val": 0.21551724137931033
+    },
+    { "method": "hccih", "attack": "speckle_0.05", "val": 0.23922413793103448 },
+    { "method": "chccih", "attack": "speckle_0.05", "val": 0.22629310344827586 }
+  ],
+  "ER": [
+    { "method": "hccih", "attack": "median_3x3", "val": 0.8620689655172413 },
+    { "method": "chccih", "attack": "median_3x3", "val": 1.0 },
+    { "method": "hccih", "attack": "median_5x5", "val": 0.8448275862068966 },
+    { "method": "chccih", "attack": "median_5x5", "val": 1.0 },
+    {
+      "method": "hccih",
+      "attack": "gaussian_noise_0.001",
+      "val": 0.8448275862068966
+    },
+    { "method": "chccih", "attack": "gaussian_noise_0.001", "val": 1.0 },
+    {
+      "method": "hccih",
+      "attack": "gaussian_noise_0.005",
+      "val": 0.8448275862068966
+    },
+    { "method": "chccih", "attack": "gaussian_noise_0.005", "val": 1.0 },
+    {
+      "method": "hccih",
+      "attack": "salt_and_pepper_1%",
+      "val": 0.8620689655172413
+    },
+    { "method": "chccih", "attack": "salt_and_pepper_1%", "val": 1.0 },
+    {
+      "method": "hccih",
+      "attack": "salt_and_pepper_5%",
+      "val": 0.8620689655172413
+    },
+    {
+      "method": "chccih",
+      "attack": "salt_and_pepper_5%",
+      "val": 0.9827586206896551
+    },
+    { "method": "hccih", "attack": "speckle_0.01", "val": 0.8448275862068966 },
+    { "method": "chccih", "attack": "speckle_0.01", "val": 1.0 },
+    { "method": "hccih", "attack": "speckle_0.05", "val": 0.8620689655172413 },
+    { "method": "chccih", "attack": "speckle_0.05", "val": 1.0 }
+  ]
+}

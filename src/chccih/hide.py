@@ -18,20 +18,31 @@ class LookupTable:
             )
             # self.hash_bound[hashcodes[i]] = 1
 
-    def match(self, car: int):
+    def match(self, car: int, randomed: bool = False):
         pos = None
-        try:
-            i = 0
-            ok = False
-            while not ok and i < self.n:
-                if self.table[i]["hashcode"] == car and self.table[i]["mask"] != 1:
-                    pos = self.table[i]["position"]
-                    self.table[i]["mask"] = 1
-                    ok = True
-                i += 1
-        except KeyError:
-            pass
-        return pos
+        offset = None
+        current_diff = None
+
+        if not randomed:
+            for i in range(self.n):
+                if self.table[i]["mask"] != 1:
+                    diff = (car - self.table[i]["hashcode"]) ** 2
+
+                    if diff == 0:
+                        self.table[i]["mask"] = 1
+                        return self.table[i]["position"], 0
+                    else:
+                        if current_diff is not None:
+                            if current_diff > diff:
+                                current_diff = diff
+                                pos = self.table[i]["position"]
+                                offset = car - self.table[i]["hashcode"]
+                        else:
+                            current_diff = diff
+                            pos = self.table[i]["position"]
+                            offset = car - self.table[i]["hashcode"]
+
+        return pos, offset
 
 
 def hide(
@@ -42,6 +53,7 @@ def hide(
     L: int = 9,
     type_hash="type2",
     path_sl="sl.json",
+    path_offset="offset.json",
     path_conf="conf.json",
     path_public_key="./pubk.json",
 ):
@@ -58,12 +70,14 @@ def hide(
     # print(set(hashcodes))
     lookupTable = LookupTable(hashcodes, positions)
     msg_ascii = [ord(caractere) for caractere in secret_message]
-
+    
     SL = []
+    OFFSETS = {}
     n = len(msg_ascii)
     ideal = True
     for i in range(n):
-        position = lookupTable.match(msg_ascii[i])
+        #print(msg_ascii[i], chr(msg_ascii[i]))
+        position, offset = lookupTable.match(msg_ascii[i])
         if position:
             SL.append(
                 {
@@ -72,6 +86,7 @@ def hide(
                     "y": position["y"],
                 }
             )
+            OFFSETS[i] = offset
         else:
             ideal = False
 
@@ -85,9 +100,15 @@ def hide(
         }
         for position in SL
     ]
+    # cryptage des offsets
+    # OFFSETS = {
+    #   encrypt(public_key, k): encrypt(public_key, v) for k, v in OFFSETS.items()
+    # }
+
     SaveSL = {"n": encrypt(public_key, n), "SL": SL}
     save2json(SaveSL, path_sl)
+    save2json(OFFSETS, path_offset)
     save2json({"L": L, "W": W, "H": H, "type_hash": type_hash}, path_conf)
-    
+
     # print(lookupTable.table)
     return ideal
